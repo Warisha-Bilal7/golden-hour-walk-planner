@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Golden Hour Walk</title>
+  <style>
+    @page { size: A4; margin: 16mm; }
+    body { font-family: Georgia, "Times New Roman", serif; color: #2b2116;
+           background: #fbf6ee; margin: 0; padding: 24px; }
+    .card { max-width: 720px; margin: 0 auto; background: #fffdf8;
+            border: 1px solid #e8ddc8; border-radius: 14px; padding: 32px 36px;
+            box-shadow: 0 6px 24px rgba(120, 90, 40, 0.12); }
+    h1 { font-size: 30px; margin: 0 0 4px; letter-spacing: 0.5px; }
+    .sub { color: #8a7452; margin: 0 0 22px; font-size: 15px; }
+    .facts { display: flex; flex-wrap: wrap; gap: 14px 28px; margin: 0 0 22px;
+             padding: 14px 0; border-top: 1px solid #efe5d2; border-bottom: 1px solid #efe5d2; }
+    .fact b { display: block; font-size: 12px; text-transform: uppercase;
+              letter-spacing: 1px; color: #a08a68; }
+    .fact span { font-size: 18px; }
+    .lead { font-size: 19px; line-height: 1.55; }
+    .map { margin: 22px 0; min-height: 160px; border: 1px dashed #d8c9ad;
+           border-radius: 10px; display: flex; align-items: center;
+           justify-content: center; color: #b09a76; font-style: italic; }
+    .foot { margin-top: 20px; font-size: 12px; color: #a08a68; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Golden Hour Walk</h1>
+    <p class="sub">A short loop through green space, ending in low light.</p>
+    <div class="facts">
+      <div class="fact"><b>Distance</b><span>{{ "%.2f"|format(km) }} km</span></div>
+      <div class="fact"><b>Sunset</b><span>{{ sunset }}</span></div>
+      <div class="fact"><b>Leave by</b><span>{{ walk_start }}</span></div>
+      <div class="fact"><b>Weather</b><span>{{ weather.source }}</span></div>
+    </div>
+    <p class="lead">{{ card_text }}</p>
+    <div class="map">route map (rendered in M2)</div>
+    {% if used_fallback %}<p class="foot">Card written from the template (no model).</p>{% endif %}
+    <p class="foot">Generated locally by ghwalk. Print me and head outside.</p>
+  </div>
+</body>
+</html>
