@@ -10,9 +10,13 @@ gh label create writing   --color 1D76DB --force
 gh label create setup     --color C5DEF5 --force
 
 # Milestones (add due_on in ISO 8601 if you want deadlines: -f due_on="2026-10-12T23:59:00Z")
+# Get current repository owner and name automatically
+REPO=$(gh repo view --json owner,name --jq '.owner.login + "/" + .name')
+
+# Milestones (add due_on in ISO 8601 if you want deadlines: -f due_on="2026-10-12T23:59:00Z")
 for m in "M0 Setup" "M1 Routing core" "M2 Sun, weather, render" \
          "M3 Local LLM nodes" "M4 Critic and eval" "M5 Field test and write-up"; do
-  gh api "repos/{owner}/{repo}/milestones" -f title="$m" >/dev/null
+  gh api "repos/$REPO/milestones" -f title="$m" >/dev/null
 done
 
 mk() { gh issue create --title "$1" --milestone "$2" --label "$3" --body "$4"; }
