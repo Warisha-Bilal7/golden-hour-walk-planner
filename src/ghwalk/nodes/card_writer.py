@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from .. import llm
 
 SYSTEM = ("You write short, friendly walking cards from verified facts only. "
@@ -64,6 +66,17 @@ def _template_card(state) -> str:
     )
 
 
+def extract_names(text: str) -> list[str]:
+    """Every [[name]] in the card text, in order."""
+    return re.findall(r"\[\[(.+?)\]\]", text)
+
+
+def unknown_names(text: str, place_names) -> list[str]:
+    """Bracketed names that are not in the verified OSM place list."""
+    valid = {p.strip() for p in (place_names or [])}
+    return sorted({n for n in extract_names(text) if n not in valid})
+
+
 def run(state):
     warnings: list[str] = []
     text = _llm_card(state)
@@ -73,4 +86,7 @@ def run(state):
         warnings.append("card_writer: Ollama unavailable, used template fallback")
     else:
         used_fallback = False
+    unknown = unknown_names(text, state.get("place_names", []))
+    if unknown:
+        warnings.append(f"card_writer: unknown place names: {', '.join(unknown)}")
     return {"card_text": text, "used_fallback": used_fallback, "warnings": warnings}
