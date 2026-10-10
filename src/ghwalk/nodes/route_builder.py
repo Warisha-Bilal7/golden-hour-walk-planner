@@ -1,25 +1,14 @@
 from __future__ import annotations
 
-from ..scoring import score_loop
+from ..scoring import generate_candidates, to_simple
+from .map_fetch import load_graph
 
 
 def run(state):
+    G = load_graph(state["graph_path"])
+    H = to_simple(G)
+    start = state["start_node"]
     params = state["params"]
-    attempt = state.get("attempt", 0)
-    target = params["target_m"]
-    if attempt == 0:
-        length, green, overlap = target * 1.4, 0.50, 0.30
-    else:
-        length, green, overlap = target, 0.75, 0.05
-    candidate = {
-        "nodes": [0, 1, 2, 3, 0],
-        "length_m": round(length, 1),
-        "green_pct": green,
-        "overlap_pct": overlap,
-        "score": score_loop(length, green, overlap, params),
-    }
-    return {
-        "candidates": [candidate],
-        "best": candidate,
-        "warnings": ["route_builder: stub candidate"],
-    }
+    candidates = generate_candidates(H, start, params, seed=state.get("attempt", 0), keep=3)
+    best = candidates[0] if candidates else None
+    return {"candidates": candidates, "best": best}
