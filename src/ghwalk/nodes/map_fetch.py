@@ -68,14 +68,23 @@ def load_graph(path: str | Path) -> nx.MultiDiGraph:
                 d["green"] = float(d["green"])
             except ValueError:
                 d["green"] = 0.0
-    for _n, nd in G.nodes(data=True):
-        for attr in ("lat", "lon"):
-            if isinstance(nd.get(attr), str):
-                try:
-                    nd[attr] = float(nd[attr])
-                except ValueError:
-                    pass
+    _restore_latlon(G)
     return G
+
+
+def _restore_latlon(G) -> None:
+    """OSMnx drops lat/lon when it serializes a projected graph, so inverse-project x/y."""
+    crs = G.graph.get("crs")
+    if not crs:
+        return
+    try:
+        back = Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
+    except Exception:
+        return
+    for _n, nd in G.nodes(data=True):
+        if nd.get("lat") is None and nd.get("x") is not None:
+            lon, lat = back.transform(nd["x"], nd["y"])
+            nd["lat"], nd["lon"] = lat, lon
 
 
 def _start_node(G, lat: float, lon: float) -> int:

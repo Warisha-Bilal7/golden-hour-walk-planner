@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from ghwalk import llm
 from ghwalk.graph import build_graph
-from ghwalk.nodes import map_fetch, route_builder
+from ghwalk.nodes import map_fetch, render, route_builder
 from ghwalk.state import initial_state
 
 
 def test_graph_runs_end_to_end(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(llm, "is_available", lambda: False)
+    monkeypatch.setattr(render, "_write_pdf", lambda html_path, pdf_path: False)
     monkeypatch.setattr(
         map_fetch, "run",
         lambda state: {

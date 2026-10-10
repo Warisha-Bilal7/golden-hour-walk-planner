@@ -21,7 +21,17 @@ python -m ghwalk --request "45 minutes before dark, trees and quiet" \
 ```
 
 The first run downloads the OSM walk graph and green polygons for the start
-point and caches them in `data/cache/` (gitignored). Run the dev tools:
+point and caches them in `data/cache/` (gitignored). Outputs land in
+`output/`:
+
+| File | What |
+|---|---|
+| `card.html` / `card.pdf` | one-page route card (print the PDF) |
+| `route_map.png` | the route over the green polygons |
+| `route.gpx` | track that opens in Organic Maps or OsmAnd |
+
+Sun times come from `astral` (no network). Weather is one Open-Meteo call,
+cached 30 min; offline it skips gracefully the card says "unavailable". Run the dev tools:
 
 ```bash
 python scripts/dev_plot.py --lat 24.86 --lon 67.01   # top-3 loops over green space

@@ -33,7 +33,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"attempts     : {result.get('attempt')}")
     print(f"fallback     : {result.get('used_fallback')}")
     print(f"card         : {result.get('card_text', '')}")
-    print(f"html / gpx   : output/card.html | {result.get('gpx_path')}")
+    print(f"html / pdf   : output/card.html | {result.get('pdf_path')}")
+    print(f"map          : {result.get('route_map_path')}")
+    print(f"gpx          : {result.get('gpx_path')}")
     for w in result.get("warnings", []):
         print(f"  ! {w}")
     return 0
