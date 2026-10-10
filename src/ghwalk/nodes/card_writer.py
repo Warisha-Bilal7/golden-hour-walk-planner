@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import re
 
+from jinja2 import Environment, PackageLoader
+
 from .. import llm
 
 SYSTEM = ("You write short, friendly walking cards from verified facts only. "
@@ -56,14 +58,9 @@ def _llm_card(state) -> str | None:
 def _template_card(state) -> str:
     facts = _facts(state)
     names = ", ".join(f"[[{p}]]" for p in state.get("place_names", [])[:3]) or "the nearest green space"
-    return (
-        "Lace up and step outside while the light is still low. "
-        f"Head out toward {names}, keep the loop gentle, and turn back in time to "
-        f"catch the glow. "
-        f"Distance {facts['km']:.1f} km (~{facts['mins']} min). "
-        f"Sunset around {facts['sunset']}. "
-        "Watch the low light catch the leaves and the tops of the trees."
-    )
+    env = Environment(loader=PackageLoader("ghwalk", "templates"))
+    template = env.get_template("card_text.j2")
+    return template.render(names=names, km=facts["km"], mins=facts["mins"], sunset=facts["sunset"])
 
 
 def extract_names(text: str) -> list[str]:
