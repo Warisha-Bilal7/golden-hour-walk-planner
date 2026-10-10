@@ -50,3 +50,20 @@ def test_card_writer_template_on_model_error(monkeypatch):
     monkeypatch.setattr(llm, "chat_text", _boom)
     out = card_writer.run(dict(STATE))
     assert out["used_fallback"] is True
+
+
+def test_extract_and_unknown_names():
+    text = "Head for [[Allah Rakha Park]] and [[Enchanted Forest]], then home."
+    assert card_writer.extract_names(text) == ["Allah Rakha Park", "Enchanted Forest"]
+    known = STATE["place_names"]
+    assert card_writer.unknown_names(text, known) == ["Enchanted Forest"]
+
+
+def test_card_writer_warns_on_unknown_bracketed_name(monkeypatch):
+    monkeypatch.setattr(llm, "is_available", lambda: False)
+    state = dict(STATE)
+    state["place_names"] = ["Allah Rakha Park"]
+    monkeypatch.setattr(card_writer, "_template_card",
+                        lambda s: "Head for [[Allah Rakha Park]] and [[Bagh-e-Lyari]].")
+    out = card_writer.run(state)
+    assert any("unknown place names: Bagh-e-Lyari" in w for w in out["warnings"])
