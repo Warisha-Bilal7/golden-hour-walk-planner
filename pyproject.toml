@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ghwalk"
+version = "0.1.0"
+description = "A local LangGraph pipeline for golden hour walking loops."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "langgraph>=0.2.0",
+    "ollama>=0.3.0",
+    "pydantic>=2.0",
+    "osmnx>=1.9.0",
+    "networkx>=3.0",
+    "shapely>=2.0",
+    "astral>=3.2",
+    "matplotlib>=3.5",
+    "jinja2>=3.0",
+    "requests>=2.0",
+    "psutil>=5.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
