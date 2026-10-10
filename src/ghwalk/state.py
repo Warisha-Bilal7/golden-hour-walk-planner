@@ -72,6 +72,7 @@ class WalkState(TypedDict, total=False):
     used_fallback: bool
     pdf_path: str
     gpx_path: str
+    route_map_path: str
 
     warnings: Annotated[list[str], operator.add]
 

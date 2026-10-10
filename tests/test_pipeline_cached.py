@@ -9,6 +9,7 @@ from shapely.geometry import Polygon
 
 from ghwalk import llm
 from ghwalk.graph import build_graph
+from ghwalk.nodes import render
 from ghwalk.nodes.map_fetch import save_green
 from ghwalk.scoring import annotate_green
 from ghwalk.state import initial_state
@@ -50,6 +51,7 @@ def _make_cached_map(cache_dir) -> str:
 def test_pipeline_runs_against_cached_map(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(llm, "is_available", lambda: False)
+    monkeypatch.setattr(render, "_write_pdf", lambda html_path, pdf_path: False)
     _make_cached_map(tmp_path / "data" / "cache")
 
     app = build_graph()
