@@ -1,0 +1,3 @@
+timestamp,model,used_fallback,card_words,unknown_name_warnings,peak_ollama_mb,peak_python_mb,elapsed_s
+2026-10-11T00:43:00,llama3.2:1b,False,78,1,402.8,296.3,68.3
+2026-10-11T00:44:29,qwen2.5:3b,False,32,0,395.4,294.1,17.7

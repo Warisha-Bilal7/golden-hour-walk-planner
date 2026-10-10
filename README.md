@@ -55,6 +55,35 @@ Final constants in `src/ghwalk/scoring.py`:
 `initial_params()` derives `target_m` from `pace` (3.5 / 4.5 / 5.5 km/h) and
 `duration_min`. Tuning table lives in `output/tune_results.csv`.
 
+## Local models (M3)
+
+Two nodes use the local model; both degrade gracefully.
+
+| Node | Call | Keep-alive | On failure |
+|---|---|---|---|
+| `intake` | `chat_structured` with `IntakeParams.model_json_schema()` | `"10m"` (stay warm for the card) | `IntakeParams()` defaults + warning |
+| `card_writer` | `chat_text`, temperature 0.4, facts-only prompt | `0` (unload right after) | Jinja template `templates/card_text.j2` + `used_fallback=True` |
+
+The model loads once (intake), stays resident for the route math, writes the
+card, then unloads. `scripts/ram_test.py` runs the whole pipeline for one model
+while sampling RSS and appends a row to `eval/results.csv`.
+
+```bash
+python scripts/ram_test.py --model llama3.2:1b
+python scripts/ram_test.py --model qwen2.5:3b
+```
+
+Measured on this machine (CPU-only, Karachi start, warmed map cache):
+
+| Model | Card words | Unknown-name warns | Peak model RAM | Wall time |
+|---|---|---|---|---|
+| `llama3.2:1b` | 78 | 1 | 403 MB | 68 s |
+| `qwen2.5:3b` | 32 | 0 | 395 MB | 18 s |
+
+Both finish under 0.5 GB of model memory, so a 4 GB laptop is enough. The 1B
+model invented one place name (caught and warned, not shown as a real place);
+the 3B stayed on the verified list.
+
 ## Tests
 
 ```bash
