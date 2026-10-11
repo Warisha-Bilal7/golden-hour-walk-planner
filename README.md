@@ -166,7 +166,7 @@ output/         generated card/map/gpx (gitignored)
 ## Tests
 
 ```bash
-python -m pytest -q      # 46 tests
+python -m pytest -q      # 50 tests
 ```
 
 ## License
