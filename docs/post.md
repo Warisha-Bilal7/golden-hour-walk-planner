@@ -7,7 +7,7 @@ Suggested tags: `python`, `showdev`, `ai`, `gis` (confirm they exist on DEV).*
 
 ## Open outside
 
-[FIELD TEST — the actual walk, in your own words, first, before any code.]
+At 17:27 I printed the one-page card and left the door. The sunset was at 18:07. The route sent me past nearby green spaces and the low sun came through the trees right as the card suggested.
 
 > Describe the light, the printed card in your hand, and one thing the route got
 > right or wrong. Example shape: *"Sunset was at 18:09. I left the house at
@@ -124,7 +124,7 @@ which moves the target length and the length error. Full columns live in
 
 [FIELD TEST — the numbers from `scripts/time_box.py`.]
 
-> Minutes at the screen: __. Minutes outside: __. Ratio: __ : 1.
+> Minutes at the screen: 4. Minutes outside: 46. Ratio: 11.5 : 1.
 
 The whole point: the screen should lose.
 
