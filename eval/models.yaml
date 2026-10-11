@@ -1,0 +1,7 @@
+# Models compared by eval/compare.py (one row each in eval/results.csv).
+# The Jinja template baseline is always appended as a final row.
+models:
+  - qwen2.5:3b
+  - qwen2.5:1.5b
+  - llama3.2:1b
+baseline: template
