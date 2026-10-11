@@ -110,8 +110,36 @@ def build_ui():
     return demo
 
 
-def main() -> int:
-    build_ui().launch()
+def main(argv: list[str] | None = None) -> int:
+    import argparse
+    import os
+
+    parser = argparse.ArgumentParser(description="Golden hour walk planner Gradio UI")
+    parser.add_argument(
+        "--host",
+        default=os.environ.get("HOST", "0.0.0.0"),
+        help="Host interface to bind to (default: 0.0.0.0 or HOST env var)",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.environ.get("PORT", "7860")),
+        help="Port to bind to (default: 7860 or PORT env var)",
+    )
+    parser.add_argument(
+        "--share",
+        action="store_true",
+        default=os.environ.get("GRADIO_SHARE", "").lower() in ("1", "true", "yes"),
+        help="Create a public gradio.live share link",
+    )
+    args = parser.parse_args(argv)
+
+    demo = build_ui()
+    demo.launch(
+        server_name=args.host,
+        server_port=args.port,
+        share=args.share,
+    )
     return 0
 
 

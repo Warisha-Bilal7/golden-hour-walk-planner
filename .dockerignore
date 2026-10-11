@@ -1,0 +1,16 @@
+.venv/
+.git/
+.gitignore
+.gradio/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+output/
+data/cache/
+cache/
+.env
+dist/
+build/
+*.egg-info/
