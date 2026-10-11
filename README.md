@@ -66,7 +66,7 @@ Two nodes use the local model; both degrade gracefully.
 
 The model loads once (intake), stays resident for the route math, writes the
 card, then unloads. `scripts/ram_test.py` runs the whole pipeline for one model
-while sampling RSS and appends a row to `eval/results.csv`.
+while sampling RSS and appends a row to `eval/ram_results.csv`.
 
 ```bash
 python scripts/ram_test.py --model llama3.2:1b
@@ -83,6 +83,36 @@ Measured on this machine (CPU-only, Karachi start, warmed map cache):
 Both finish under 0.5 GB of model memory, so a 4 GB laptop is enough. The 1B
 model invented one place name (caught and warned, not shown as a real place);
 the 3B stayed on the verified list.
+
+## Model comparison (M4)
+
+`eval/compare.py` runs the **same request** through each pulled model plus the
+Jinja template baseline and writes `eval/results.csv` (one row per model). The
+router is deterministic, so length/green/overlap only differ when a model parses
+the request differently (`pace`); the interesting columns are the hallucination
+count and the card length.
+
+```bash
+python eval/compare.py                 # models from eval/models.yaml
+python eval/compare.py --models "qwen2.5:3b,llama3.2:1b"
+python eval/hallucination.py --places-file data/cache/24.860_67.001_green.geojson --card-file card.txt
+```
+
+Run 2026-10-11, Karachi, "45 minutes before dark, trees and quiet", CPU-only:
+
+| Model | Pace read | Words | Bracketed | Hallucinations | Length err | Green | Peak RAM | Time |
+|---|---|---|---|---|---|---|---|---|
+| `qwen2.5:3b` | normal | 36 | 0 | 0 | 0.3% | 6.7% | 259 MB | 106 s |
+| `qwen2.5:1.5b` | brisk | 69 | 0 | 0 | 4.4% | 5.5% | 260 MB | 16 s |
+| `llama3.2:1b` | slow | 56 | 0 | 0 | 9.5% | 18.2% | 274 MB | 76 s |
+| template (baseline) | normal | 55 | 3 | 0 | 0.3% | 6.7% | 273 MB | 65 s |
+
+Takeaways: all three models stayed on the verified place list in this run (the
+1B did hallucinate on an earlier run - see the M3 table - so the check matters).
+The 3B read the pace as `normal` and produced the shortest, most on-target card;
+the 1.5B misread the pace as `brisk` and the 1B as `slow`, which move the target
+length and the length error. RAM is flat (~260 MB) across sizes because 1B-3B
+are all small 4-bit quants. Full columns: `eval/results.csv`.
 
 ## Tests
 
