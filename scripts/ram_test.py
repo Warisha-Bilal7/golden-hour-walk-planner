@@ -32,7 +32,7 @@ def main(argv=None) -> int:
     ap.add_argument("--lat", type=float, default=24.8607)
     ap.add_argument("--lon", type=float, default=67.0011)
     ap.add_argument("--tz", default="Asia/Karachi")
-    ap.add_argument("--csv", default="eval/results.csv")
+    ap.add_argument("--csv", default="eval/ram_results.csv")
     ap.add_argument("--interval", type=float, default=0.25)
     args = ap.parse_args(argv)
 

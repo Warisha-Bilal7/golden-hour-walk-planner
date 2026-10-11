@@ -1,3 +1,5 @@
-timestamp,model,used_fallback,card_words,unknown_name_warnings,peak_ollama_mb,peak_python_mb,elapsed_s
-2026-10-11T00:43:00,llama3.2:1b,False,78,1,402.8,296.3,68.3
-2026-10-11T00:44:29,qwen2.5:3b,False,32,0,395.4,294.1,17.7
+timestamp,model,used_fallback,attempts,card_words,bracketed_names,hallucinations,length_m,target_m,length_err_pct,green_pct,overlap_pct,peak_ollama_mb,peak_python_mb,elapsed_s
+2026-10-11T22:33:18,qwen2.5:3b,False,0,36,0,0,3366.1,3375.0,0.3,6.7,0.0,259.2,297.7,106.4
+2026-10-11T22:33:34,qwen2.5:1.5b,False,0,69,0,0,3942.7,4125.0,4.4,5.5,0.0,260.4,298.3,15.6
+2026-10-11T22:34:50,llama3.2:1b,False,0,56,0,0,2873.8,2625.0,9.5,18.2,5.1,274.1,298.3,76.1
+2026-10-11T22:35:55,template,True,0,55,3,0,3366.1,3375.0,0.3,6.7,0.0,273.0,305.1,64.9
