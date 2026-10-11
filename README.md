@@ -1,8 +1,25 @@
 # ghwalk
 
 A local LangGraph pipeline that plans a 30-60 minute walking loop through green
-space so the walk ends in golden light. See `golden-hour-walk-planner.md` for
-the full plan.
+space so the walk ends in golden light. You spend a few minutes at the keyboard,
+then take one printed page (and a GPX) outside. The model only reads your request
+and writes the card; every distance, sun time, and route is computed by
+deterministic code. See `golden-hour-walk-planner.md` for the full plan.
+
+## How it works
+
+```
+intake -> sun -> weather -> map_fetch -> route_builder -> critic -> card_writer -> render
+ (LLM)   (astral) (Open-Meteo) (osmnx)   (networkx/Dijkstra)  |  (LLM)
+                                                             +-> route_builder (retry, loosened)
+```
+
+- **The model never routes.** `intake` parses your request into structured
+  parameters; `card_writer` writes the card from verified facts. If the model is
+  unavailable or returns junk, defaults and a Jinja template keep the app working.
+- **The `critic` checks the loop** for length, green coverage, and overlap, and
+  can send it back to `route_builder` up to `MAX_ATTEMPTS` (3), loosening the
+  target each time.
 
 ## Install
 
@@ -31,7 +48,7 @@ point and caches them in `data/cache/` (gitignored). Outputs land in
 | `route.gpx` | track that opens in Organic Maps or OsmAnd |
 
 Sun times come from `astral` (no network). Weather is one Open-Meteo call,
-cached 30 min; offline it skips gracefully the card says "unavailable". Run the dev tools:
+cached 30 min; offline it skips gracefully and the card says "unavailable". Run the dev tools:
 
 ```bash
 python scripts/dev_plot.py --lat 24.86 --lon 67.01   # top-3 loops over green space
@@ -114,8 +131,44 @@ the 1.5B misread the pace as `brisk` and the 1B as `slow`, which move the target
 length and the length error. RAM is flat (~260 MB) across sizes because 1B-3B
 are all small 4-bit quants. Full columns: `eval/results.csv`.
 
+## Field test (M5)
+
+The point of the app is the walk, not the app. `docs/field_test.md` is the log I
+filled in after taking one printed card out: sun/weather as reported vs. what it
+felt like, screen time vs. time outside, and where the card was right or wrong.
+Photos go in `docs/photos/`.
+
+## Screen vs. outside (M5)
+
+`scripts/time_box.py` turns a few timestamps into the only metric that matters:
+
+```bash
+python scripts/time_box.py --screen 17:10,17:14,18:38 --outside 17:14,18:20,18:38
+```
+
+It prints minutes at the screen, minutes outside, and the ratio (and can emit a
+Markdown row for the field-test log). `docs/measurement.md` defines what counts as
+each. Full write-up: `docs/post.md`.
+
+## Project layout
+
+```
+src/ghwalk/     pipeline nodes (intake, sun, weather, map_fetch, route_builder,
+                critic, card_writer, render), state, scoring, llm client
+templates/      Jinja card fallback (card_text.j2)
+scripts/        ram_test.py, dev_plot.py, dev_tune.py, time_box.py
+eval/           compare.py, hallucination.py, models.yaml, results.csv, ram_results.csv
+tests/          pytest suite
+docs/           field_test.md, measurement.md, post.md, submission.md, photos/
+output/         generated card/map/gpx (gitignored)
+```
+
 ## Tests
 
 ```bash
-python -m pytest -q
+python -m pytest -q      # 50 tests
 ```
+
+## License
+
+MIT — see `LICENSE`.
