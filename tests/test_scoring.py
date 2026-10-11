@@ -145,3 +145,36 @@ def test_initial_params_and_loosen():
     assert lp["max_overlap"] > p["max_overlap"]
     assert lp["w_green"] < p["w_green"]
     assert lp["n_candidates"] > p["n_candidates"]
+
+
+def test_loosen_shrinks_radius_when_route_too_long():
+    p = initial_params(45, "normal")
+    lp = loosen(p, {"length_m": p["target_m"] * 2.0})
+    assert lp["radius_factor"] < p["radius_factor"]
+
+
+def test_loosen_grows_radius_when_route_too_short():
+    p = initial_params(45, "normal")
+    lp = loosen(p, {"length_m": p["target_m"] * 0.5})
+    assert lp["radius_factor"] > p["radius_factor"]
+
+
+def test_loosen_without_candidate_keeps_radius_but_relaxes():
+    p = initial_params(45, "normal")
+    lp = loosen(p, None)
+    assert lp["radius_factor"] == pytest.approx(p["radius_factor"])
+    assert lp["tolerance"] > p["tolerance"]
+    assert lp["n_candidates"] > p["n_candidates"]
+
+
+def test_repeated_loosen_stays_bounded():
+    p = initial_params(45, "normal")
+    far = {"length_m": p["target_m"] * 10.0}
+    near = {"length_m": p["target_m"] * 0.1}
+    for i in range(20):
+        p = loosen(p, far if i % 2 else near)
+        assert 0.12 <= p["radius_factor"] <= 0.45
+        assert p["w_green"] >= 0.2
+        assert p["n_candidates"] <= 120
+    assert p["tolerance"] == pytest.approx(0.15 + 20 * 0.05)
+    assert p["max_overlap"] == pytest.approx(0.20 + 20 * 0.10)
